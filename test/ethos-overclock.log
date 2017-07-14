@@ -1,0 +1,22 @@
+Fri Jul 14 12:14:36 UTC 2017 - ethOS-overclock started.... WARNING: Only applying fan settings, amdgpu clock changes require a reboot to take effect! echo Fri Jul 14 12:14:36 UTC 2017 - ethOS-overclock started
+Applying Rig Specific Fan settings to GPU0 Value: 63
+Applying Rig Specific Fan settings to GPU1 Value: 66
+Applying Rig Specific Fan settings to GPU2 Value: 66
+Applying Rig Specific Fan settings to GPU3 Value: 68
+Applying Rig Specific Fan settings to GPU4 Value: 58
+Applying Rig Specific Fan settings to GPU5 Value: 69
+Applying Rig Specific Fan settings to GPU0 Value: 63
+Applying Rig Specific Fan settings to GPU1 Value: 66
+Applying Rig Specific Fan settings to GPU2 Value: 66
+Applying Rig Specific Fan settings to GPU3 Value: 68
+Applying Rig Specific Fan settings to GPU4 Value: 58
+Applying Rig Specific Fan settings to GPU5 Value: 69
+------------------------------------ Ethos Overclock Summary ------------------------------------
+|-GPU 0 |  Core: 0  Memory: 0  Global Powertune: 3  Rig Specific Fan: 63
+|-GPU 1 |  Core: 0  Memory: 0  Global Powertune: 3  Rig Specific Fan: 66
+|-GPU 2 |  Core: 0  Memory: 0  Global Powertune: 3  Rig Specific Fan: 66
+|-GPU 3 |  Core: 0  Memory: 0  Global Powertune: 3  Rig Specific Fan: 68
+|-GPU 4 |  Core: 0  Memory: 0  Global Powertune: 3  Rig Specific Fan: 58
+|-GPU 5 |  Core: 0  Memory: 0  Global Powertune: 3  Rig Specific Fan: 69
+|________________________________________________________________________________________________
+Fri Jul 14 12:14:37 UTC 2017 - ethOS-overclock finished

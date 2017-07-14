@@ -23,3 +23,5 @@ data/DoctrineORMModule/cache/
 # Legacy ZF1
 demos/
 extras/documentation
+
+custom-fanbytemp.log
