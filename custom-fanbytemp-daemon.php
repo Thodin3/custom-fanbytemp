@@ -20,8 +20,9 @@ declare(ticks=1);
 
 // Init constants
 const FAN_COMMAND = 'fan';
-const GLOBAL_FAN_COMMAND = 'globalfan';
 const CUR_WORKER = 'c94e13';
+const GLOBAL_FAN_COMMAND = 'globalfan';
+const GLOBAL_FAN_DEFAULT = 85;
 const CR = "\n";
 const LOCAL_CONF = '/home/ethos/local.conf';
 #const LOCAL_CONF = 'test/sample_local.conf';
@@ -244,18 +245,21 @@ function read_conf($filename = LOCAL_CONF)
 {
     $fh = fopen($filename, 'r');
 
-    $fan_value = '';
+    $fan_value = GLOBAL_FAN_DEFAULT;
 
     if ($fh != NULL) {
         while (!feof($fh)) {
 
             $line = fgets($fh);
             $conf_line = explode(' ', $line);
-            $fan_value = '';
 
-            if (count($conf_line) == 2 && (trim($conf_line[0]) == GLOBAL_FAN_COMMAND)) {
-                $fan_value = trim($conf_line[1]);
-                break;
+            if (count($conf_line) == 2) {
+                $command = trim($conf_line[0]);
+                $global_value = trim($conf_line[1]);
+                if ($command == GLOBAL_FAN_COMMAND && is_numeric($global_value)) {
+                    $fan_value = $global_value + 0;
+                    break;
+                }
             }
         }
 
@@ -427,7 +431,7 @@ function revert_handler($signo)
         $value = $global_fan;
     }
     reload_conf(put_real_conf());
-    exit(1);
+    exit($signo);
 }
 
 if (php_uname('s') == 'Linux') {
