@@ -15,8 +15,12 @@
 	USE OR INABILITY TO USE THE PROGRAM. See LICENSE for more details.
  */
 
+// tick use required as of PHP 4.3.0
+declare(ticks=1);
+
 // Init constants
 const FAN_COMMAND = 'fan';
+const GLOBAL_FAN_COMMAND = 'globalfan';
 const CUR_WORKER = 'c94e13';
 const CR = "\n";
 const LOCAL_CONF = '/home/ethos/local.conf';
@@ -55,11 +59,11 @@ function execute($command_id)
             break;
         case READ_TEMP:
             $command = '/opt/ethos/sbin/ethos-readdata temps';
-            #$command = 'type test\sample_temps.txt';
+            #$command = 'cat test/sample_temps.txt';
             break;
         case READ_FAN:
             $command = '/opt/ethos/sbin/ethos-readdata fan';
-            #$command = 'type test\sample_fan.txt';
+            #$command = 'cat test/sample_fan.txt';
             break;
         default:
             $command = '';
@@ -232,6 +236,38 @@ function put_conf($fan_values, $filename = LOCAL_CONF)
 }
 
 /**
+ * get the old value from globalfan in local.conf file
+ * @param string $filename
+ * @return string $fan_value
+ */
+function read_conf($filename = LOCAL_CONF)
+{
+    $fh = fopen($filename, 'r');
+
+    $fan_value = '';
+
+    if ($fh != NULL) {
+        while (!feof($fh)) {
+
+            $line = fgets($fh);
+            $conf_line = explode(' ', $line);
+            $fan_value = '';
+
+            if (count($conf_line) == 2 && (trim($conf_line[0]) == GLOBAL_FAN_COMMAND)) {
+                $fan_value = trim($conf_line[1]);
+                break;
+            }
+        }
+
+        fclose($fh);
+    } else {
+        daemon_log("File not found!");
+    }
+
+    return $fan_value;
+}
+
+/**
  * logger for this daemon
  * @param $raw_text
  * @param bool $carriage_return
@@ -375,6 +411,33 @@ function put_real_conf()
 }
 
 /**
+ * Callback in case of Kill signal
+ * Revert conf to global conf default and reload
+ * @param $signo
+ */
+function revert_handler($signo)
+{
+    global $REF_CONF_ARRAY;
+    global $DIFF_CONF_ARRAY;
+
+    $global_fan = read_conf();
+    daemon_log("Back to default (SIG=" . $signo . "): " . $global_fan);
+    $DIFF_CONF_ARRAY = NULL;
+    foreach ($REF_CONF_ARRAY as &$value) {
+        $value = $global_fan;
+    }
+    reload_conf(put_real_conf());
+    exit(1);
+}
+
+if (php_uname('s') == 'Linux') {
+    // Install the signal handlers
+    pcntl_signal(SIGTERM, "revert_handler"); // kill
+    pcntl_signal(SIGHUP, "revert_handler"); // kill -s HUP or kill -1
+    pcntl_signal(SIGINT, "revert_handler"); // Ctrl-C
+}
+
+/**
  * Infinite loop for daemon
  */
 while (TRUE) {
@@ -399,4 +462,7 @@ while (TRUE) {
     sleep(5);
 }
 
-
+// Reset the signal handlers
+pcntl_signal(SIGHUP, SIG_DFL);
+pcntl_signal(SIGINT, SIG_DFL);
+pcntl_signal(SIGTERM, SIG_DFL);

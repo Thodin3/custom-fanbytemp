@@ -20,6 +20,10 @@ This script is complementary to ethOS and provide a custom behavior for fan spee
 - check your logs in */home/ethos/custom-fanbytemp.log*
 - enjoy your new silenced RIG!
 
+### Usage
+- You can manage the daemon with command *custom-fanbytemp.sh* `[start*|stop|restart]` *=default
+    - when stopped, the daemon will revert your fans to `globalfan` value in *local.conf*
+
 ### Tests
 - remove `#` in *custom-fanbytemp-daemon.php*
 - modify the files in test/ folder :

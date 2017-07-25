@@ -15,14 +15,14 @@
 # USE OR INABILITY TO USE THE PROGRAM. See LICENSE for more details.
 #
 
-if [ "$1" == "--force" ] || [ "$1" == "--kill" ]
+if [ "$1" == "restart" ] || [ "$1" == "stop" ]
 then
 	pkill -ef '/home/ethos/custom-fanbytemp-daemon.php'
 fi
 
 proc=$(ps -aux | grep php | grep custom-fanbytemp-daemon)
 
-if [ "$1" != "--kill" ]
+if [ "$1" != "stop" ]
 then
 	if [ "$proc" == "" ]
 	then
