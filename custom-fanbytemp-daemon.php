@@ -35,6 +35,7 @@ const READ_TEMP = 1;
 const READ_FAN = 2;
 const HYSTERESIS = 1;
 const MIN_STABLE_TIME = 3;
+const MAX_STABLE_TIME = 6;
 const MAX_DIFF = 3;
 
 // Init global variables
@@ -374,13 +375,33 @@ function ref_conf_compare()
         $diff = $REF_CONF_ARRAY[$i] - $current_fan_percent[$i];
         if ($DIFF_CONF_ARRAY != NULL) {
             // check moy value with previous one
-            $diff = ceil(($DIFF_CONF_ARRAY[$i] + $diff) / 2);
+            $diff = round((2 * $DIFF_CONF_ARRAY[$i] + $diff) / 2);
         }
         $diff = min($diff, MAX_DIFF);
         $diff = max($diff, -MAX_DIFF);
         array_push($diff_fan_percent_array, $diff);
     }
     return $diff_fan_percent_array;
+}
+
+/**
+ * compare diff array and return true if $DIFF_CONF_ARRAY < $diff_fan_percent
+ * @param $diff_fan_percent
+ * @return bool
+ */
+function diff_compare($diff_fan_percent)
+{
+    global $DIFF_CONF_ARRAY;
+
+    $changed = FALSE;
+    for ($i = 0; $i < count($DIFF_CONF_ARRAY); $i++) {
+        $diff = abs($diff_fan_percent[$i]) - abs($DIFF_CONF_ARRAY[$i]);
+        if ($diff > 0) {
+            $DIFF_CONF_ARRAY[$i] = $diff_fan_percent[$i];
+            $changed = TRUE;
+        }
+    }
+    return $changed;
 }
 
 /**
@@ -455,9 +476,13 @@ while (TRUE) {
         $changed = put_real_conf();
     } else {
         $diff_fan_percent = ref_conf_compare();
-        if ($STABLE_TIME >= MIN_STABLE_TIME && $DIFF_CONF_ARRAY != $diff_fan_percent) {
+        if ($STABLE_TIME >= MIN_STABLE_TIME && $STABLE_TIME < MAX_STABLE_TIME && $DIFF_CONF_ARRAY != $diff_fan_percent) {
             $DIFF_CONF_ARRAY = $diff_fan_percent;
             $changed = put_real_conf();
+            $STABLE_TIME++;
+        } else if ($STABLE_TIME >= MAX_STABLE_TIME && diff_compare($diff_fan_percent)) {
+            $changed = put_real_conf();
+            $STABLE_TIME++;
         } else if ($STABLE_TIME < MIN_STABLE_TIME) {
             $STABLE_TIME++;
         }
