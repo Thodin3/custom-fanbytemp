@@ -6,8 +6,8 @@ This script is complementary to ethOS and provide a custom behavior for fan spee
 + In the *local.conf*, a line is modified (each other lines are copied as is): `fan c94e13 62 64 62 66 53 64` it controls fan speed of each GPU of your RIG worker.
 + Only one worker is currently supported.
 + It will also trigger *overclock* command to take the new fan speed into account.
-+ After this, the script will check the real fan speed and ajust the conf accordingly.
-+ After your RIG booted, the ajustment with real fan speed is not done until the temperatures are stable.
++ After this, the script will check the real fan speed and adjust the conf accordingly.
++ After your RIG booted, the adjustment with real fan speed is not done until the temperatures are stable.
 + If the adjustment is wavering, max will be saved and adjustment will stop.
 + Then it will standby until an new change of GPU temperatures.
 + An hysteresis of 1 is applied for temperature going down.
